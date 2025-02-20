@@ -215,8 +215,13 @@ class RawDataResponse
                 break;
 
             case RecordTypes::TXT:
-                $strLen = ord($this->readResponse());
-                $text = $this->readResponse($strLen);
+                $totalLength = $headerData['length'];
+                $text = '';
+                do {
+                    $totalLength--;
+                    $strLen = ord($this->readResponse());
+                    $text .= $this->readResponse($strLen);
+                } while (strlen($text) < $totalLength);
                 $result['txt'] = DnsUtils::sanitizeRecordTxt($text);
                 break;
 
